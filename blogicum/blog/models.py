@@ -1,17 +1,34 @@
-from django.contrib.auth.models import User
-from django.core.validators import MinLengthValidator
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+MAX_LENGTH = 256
+STR_DISPLAY_LENGTH = 15
 
 
-class Location(models.Model):
-    name = models.CharField(
-        max_length=100,
-        verbose_name='Название места',
-        help_text='Максимум 100 символов',
-    )
+class PublishedModel(models.Model):
     is_published = models.BooleanField(
         default=True,
         verbose_name='Опубликовано',
+        help_text=(
+            'Снимите галочку, '
+            'чтобы скрыть публикацию.'
+        )
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Добавлено'
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Location(PublishedModel):
+    name = models.CharField(
+        max_length=MAX_LENGTH,
+        verbose_name='Название места'
     )
 
     class Meta:
@@ -19,29 +36,27 @@ class Location(models.Model):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        return self.name[:15]
+        if len(self.name) > STR_DISPLAY_LENGTH:
+            return self.name[:STR_DISPLAY_LENGTH] + '...'
+        return self.name
 
 
-class Category(models.Model):
+class Category(PublishedModel):
     title = models.CharField(
-        max_length=256,
-        verbose_name='Заголовок',
+        max_length=MAX_LENGTH,
+        verbose_name='Заголовок'
     )
     description = models.TextField(
-        verbose_name='Описание',
+        verbose_name='Описание'
     )
     slug = models.SlugField(
         unique=True,
-        validators=[MinLengthValidator(1)],
         verbose_name='Идентификатор',
         help_text=(
-            'Идентификатор страницы для URL; разрешены символы латиницы, '
-            'цифры, дефис и подчёркивание.'
-        ),
-    )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name='Опубликовано',
+            'Идентификатор страницы для URL; '
+            'разрешены символы латиницы, цифры, '
+            'дефис и подчёркивание.'
+        )
     )
 
     class Meta:
@@ -49,49 +64,45 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.title[:15]
+        if len(self.title) > STR_DISPLAY_LENGTH:
+            return self.title[:STR_DISPLAY_LENGTH] + '...'
+        return self.title
 
 
-class Post(models.Model):
+class Post(PublishedModel):
     title = models.CharField(
-        max_length=256,
-        verbose_name='Заголовок',
+        max_length=MAX_LENGTH,
+        verbose_name='Заголовок'
     )
     text = models.TextField(
-        verbose_name='Текст',
+        verbose_name='Текст'
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text=(
-            'Если установить дату и время в будущем — можно делать '
+            'Если установить дату и время '
+            'в будущем — можно делать '
             'отложенные публикации.'
-        ),
+        )
     )
     author = models.ForeignKey(
         User,
-        verbose_name='Автор публикации',
         on_delete=models.CASCADE,
+        verbose_name='Автор публикации'
     )
     location = models.ForeignKey(
         Location,
-        verbose_name='Местоположение',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        verbose_name='Местоположение'
     )
     category = models.ForeignKey(
         Category,
-        verbose_name='Категория',
         on_delete=models.SET_NULL,
         null=True,
-    )
-    created_at = models.DateTimeField(
-        verbose_name='Добавлено',
-        auto_now_add=True,
-    )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name='Опубликовано',
+        blank=False,
+        verbose_name='Категория'
     )
     image = models.ImageField(
         verbose_name='Изображение',
@@ -105,7 +116,9 @@ class Post(models.Model):
         ordering = ('-pub_date', )
 
     def __str__(self):
-        return self.title[:15]
+        if len(self.title) > STR_DISPLAY_LENGTH:
+            return self.title[:STR_DISPLAY_LENGTH] + '...'
+        return self.title
 
 
 class Comment(models.Model):
@@ -134,4 +147,6 @@ class Comment(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        return self.text[:15]
+        if len(self.text) > STR_DISPLAY_LENGTH:
+            return self.text[:STR_DISPLAY_LENGTH] + '...'
+        return self.text
