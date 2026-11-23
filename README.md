@@ -11,7 +11,7 @@
 
 </div>
 
-> Итоговая версия проекта. Предыдущие этапы: [django-sprint1](https://github.com/JuliaDJ1/django-sprint1) (шаблоны и маршрутизация) → [django-sprint3](https://github.com/JuliaDJ1/django-sprint3) (модели и админка) → **django-sprint4**.
+> Итоговая версия проекта. Предыдущие этапы: [django-sprint1](https://github.com/vadim-guseinov/django-sprint1) (шаблоны и маршрутизация) → [django-sprint3](https://github.com/vadim-guseinov/django-sprint3) (модели и админка) → **django-sprint4**.
 
 ## О проекте
 
@@ -43,7 +43,7 @@ Python 3.12 · Django 5.1 · Django ORM · SQLite · Pillow · django-bootstrap5
 **Требования:** Python 3.10+ (проверено на 3.12).
 
 ```bash
-git clone https://github.com/JuliaDJ1/django-sprint4.git
+git clone https://github.com/vadim-guseinov/django-sprint4.git
 cd django-sprint4
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
